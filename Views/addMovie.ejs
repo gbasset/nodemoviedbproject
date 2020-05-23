@@ -1,0 +1,27 @@
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/styles.css">
+    <title>Express Movies</title>
+</head>
+
+<body>
+    <div class="central">
+
+        <h1>Ajouter un film </h1>
+        <div>
+            <%- include('./partials/header'); -%>
+            <form>
+                <input type="text" placeholder="ajouter un titre" />
+                <input type="text" placeholder="ajouter un realisateur" />
+                <input type="text" placeholder="ajouter une date" />
+
+            </form>
+        </div>
+        <%- include('./partials/footer'); -%>
+    </div>
+</body>
+
+</html>
