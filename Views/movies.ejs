@@ -9,14 +9,83 @@
 
 <body>
     <div class="central">
-        <h1>Pages Des films</h1>
-        <div>
-            <%- include('./partials/header'); -%>
-            Bientôt des films sur cette page
+        <h1><%= title%></h1>
+        <%- include('./partials/header'); -%>
+
+        <div class='french-movies'>
+            <% movies.map(movie => {%>
+            <div><%= movie.title %> <%= movie.year  %></div>
+            <%})
+    
+                %>
         </div>
+
+        <form action="/movies" method="post" id="form">
+            <label for="movieTitle">Titre du film</label>
+            <input type="text" name="movietitle" id="movietitle" />
+            <label for="movieYear">Année du film</label>
+            <input type="text" name="movieyear" id="movieyear" />
+            <button type="submit">Enregistrer</button>
+        </form>
+
+
         <%- include('./partials/footer'); -%>
     </div>
+    <script>
+        const form = document.querySelector('form')
+        form.addEventListener('submit', addMovie)
+        function addMovie(event) {
+            event.preventDefault()
+            if (fetch) {
+                fetch('/movies', {
+                    method: 'POST',
+                    body: new FormData(form)
+                })
+                    .then(checkStatus)
+                    .catch(function (error) {
+                        console.log('request failed', error);
 
+                    })
+            } else {
+                //xmlhttprequest
+            }
+        }
+
+        function checkStatus(response) {
+            if (response.status >= 200 && response.status < 300) {
+                if (response.status >= 200 && response.status < 300) {
+                    let newMovieDiv = document.createElement('div');
+                    const movietitle = document.getElementById('movietitle').value;
+                    const movieyear = document.getElementById('movieyear').value;
+                    newMovieDiv.innerHTML = `${movietitle} (${movieyear})`;
+                    document.querySelector('.french-movies').appendChild(newMovieDiv);
+                    form.reset();
+                }
+            }
+        }
+
+        function addMovieUsingXHR(event) {
+            // this browser does NOT support fetch. Fall back to XHR
+            event.preventDefault();
+            console.log('using addMovieUsingXHR()');
+            // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", '/movies-old-browser', true);
+            //Send the proper header information along with the request
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {//Call a function when the state changes.
+                if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+                    form.reset();
+                }
+            }
+            // https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
+            console.log('form: ', form);
+            var movietitle = document.getElementById('movietitle').value;
+            var movieyear = document.getElementById('movieyear').value;
+            var payLoad = "movietitle=" + movietitle + "&" + "movieyear=" + movieyear;
+            xhr.send(payLoad);
+        }
+    </script>
 </body>
 
 </html>
