@@ -10,7 +10,11 @@ app.set('view engine', 'ejs')
 // Use pour ajouter le Middleware pour les fichiers statics css / img pdf ...
 app.use('/public', express.static('public'))
 // app.use(bodyParser.urlencoded({ extended: false }))
-
+const API_END_POINT = "https://api.themoviedb.org/3/"
+const POPULAR_MOVIES_URL = "discover/movie?language=fr&sort_by=popularity.desc&include_adult=false&append_to_response=images"
+const API_KEY = "api_key=64194ae703e2630dd0d31d51af95795c"
+//https://api.themoviedb.org/3/movie/388399?api_key=64194ae703e2630dd0d31d51af95795c
+//https://api.themoviedb.org/3/search/movie?api_key=64194ae703e2630dd0d31d51af95795c&query=dogville&language=fr-FR
 app.get('/', (req, res) => {
     res.render('index')
 })
@@ -61,6 +65,10 @@ app.get('/movies/add', (req, res) => {
 //     res.render('moviesDetails')
 // })
 
+app.get('/movie-search', (req, res) => {
+    res.render('movieSearch')
+})
+
 // les routes génériques en bas ! importance de l'ordre
 app.get('/movie/:id', (req, res) => {
     const id = req.params.id
@@ -71,9 +79,8 @@ app.get('/movies/:titre', (req, res) => {
     const id = req.params.id
     const titre = req.params.titre
     // res.send(`Bientôt le film <b>${id}</b>  !`)
-    res.render('moviesDetails', { title: titre })
+    res.render('moviesDetails', { title: titre, movieId: id })
 })
-
 app.listen(PORT, () => {
     console.log(`the application is listening on port ${PORT}`);
 })

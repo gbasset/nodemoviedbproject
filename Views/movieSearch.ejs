@@ -1,0 +1,55 @@
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/styles.css">
+    <title>Express Movies</title>
+</head>
+
+<body>
+    <div class="central">
+        <h1>Rechercher des films</h1>
+        <%- include('./partials/header'); -%>
+
+        <div>
+            <input type="text" name="searchInput" id="searchInput" placeholder="saisissez un titre" />
+            <button id="search">Chercher</button>
+        </div>
+        <div id="results">
+        </div>
+        <%- include('./partials/footer'); -%>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const term = document.querySelector('#searchInput')
+        const API_KEY = "api_key=64194ae703e2630dd0d31d51af95795c"
+        const btnSearch = document.querySelector('#search')
+        let resultsDiv = document.querySelector('#results')
+        let resultats = []
+        btnSearch.addEventListener('click', search)
+        const API_END_POINT = "https://api.themoviedb.org/3/"
+        //https://api.themoviedb.org/3/movie/388399?api_key=64194ae703e2630dd0d31d51af95795c
+        //https://api.themoviedb.org/3/search/movie?api_key=64194ae703e2630dd0d31d51af95795c&query=harry&language=fr-FR
+        function search() {
+            const query = `${API_END_POINT}search/movie?${API_KEY}&query=${term.value}&language=fr-FR`
+            axios.get(query)
+                .then((response) => {
+                    console.log('response', response.data.results);
+                    displayResults(response.data.results)
+                })
+        }
+        function displayResults(results) {
+            const resultats = results.map(x =>
+                `<div>
+                    Titre : ${x.title}
+                    <p>Langue : ${x.original_language}</p>
+                    <p> ${x.overview} </p>
+                </div>`
+            ).join('')
+            resultsDiv.innerHTML = resultats
+        }
+    </script>
+</body>
+
+</html>
