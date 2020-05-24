@@ -14,7 +14,7 @@
 
         <div class='french-movies'>
             <% movies.map(movie => {%>
-            <div><%= movie.title %> <%= movie.year  %></div>
+            <div><a href="/movie-details/<%=movie._id%>"><%= movie.movieTitle %> <%= movie.movieYear  %></a></div>
             <%})
     
                 %>

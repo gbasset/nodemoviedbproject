@@ -1,0 +1,49 @@
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/styles.css">
+    <title>Express Movies</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div class="central">
+        <%- include('./partials/header'); -%>
+        <h1>Détails du film <%= movie.movieTitle %></h1>
+
+        <div>
+
+            <div>
+                <form action="/movie-details/<%= movie._id %>" method="post">
+                    <legend>Modifier le film</legend>
+                    <label for="movietitle">Titre du film</label>
+                    <input type="text" name="movietitle" id="movietitle" value="<%= movie.movieTitle %>">
+                    <label for="movieyear">Année du film</label>
+                    <input type="text" name="movieyear" id="movieyear" value="<%= movie.movieYear %>">
+                    <button type="submit">mettre à jour</button>
+                </form>
+            </div>
+            <button id="supr">suprimer</button>
+        </div>
+
+        <%- include('./partials/footer'); -%>
+    </div>
+    <script>
+        var btnSupr = document.querySelector('#supr')
+        btnSupr.addEventListener('click', deleteDocument)
+        function deleteDocument() {
+            var movieId = <%- JSON.stringify(movie._id) %>
+            var url = '/movie-details/' + movieId
+            axios.delete(url).then(function (response) {
+                window.location= '/movies'
+            }).catch(function (error) {
+                console.log(error);
+
+            })
+        }
+    </script>
+</body>
+
+</html>
