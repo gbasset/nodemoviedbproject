@@ -1,20 +1,23 @@
-const express = require('express')
+const express = require('express') // pour express
 const app = express()
-const bodyParser = require('body-parser')
-const multer = require('multer');
+const bodyParser = require('body-parser') // pour recupérer le body 
+const multer = require('multer'); // pour recupérer des infos depuis les forms
 const upload = multer()
+const jwt = require('jsonwebtoken') // pour créer des tokens et recuperer les contenus du payload
+const expressJwt = require('express-jwt') // pour protéger certaines routes
+
 const PORT = 3000
+//  il est preferable de placer le secret dans une variable env pour la securité
+const secret = 'qsdjS12ozehdoIJ123DJOZJLDSCqsdeffdg123ER56SDFZedhWXojqshduzaohduihqsDAqsdq'
+
 app.set('views', './Views')
 // template engine on precise où se trouvent les vues
 app.set('view engine', 'ejs')
 // Use pour ajouter le Middleware pour les fichiers statics css / img pdf ...
 app.use('/public', express.static('public'))
-// app.use(bodyParser.urlencoded({ extended: false }))
-const API_END_POINT = "https://api.themoviedb.org/3/"
-const POPULAR_MOVIES_URL = "discover/movie?language=fr&sort_by=popularity.desc&include_adult=false&append_to_response=images"
-const API_KEY = "api_key=64194ae703e2630dd0d31d51af95795c"
-//https://api.themoviedb.org/3/movie/388399?api_key=64194ae703e2630dd0d31d51af95795c
-//https://api.themoviedb.org/3/search/movie?api_key=64194ae703e2630dd0d31d51af95795c&query=dogville&language=fr-FR
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(expressJwt({ secret: secret }).unless({ path: ['/', '/login', '/movies', '/movies-details', '/movie-search'] }))
+
 app.get('/', (req, res) => {
     res.render('index')
 })
@@ -80,6 +83,31 @@ app.get('/movies/:titre', (req, res) => {
     const titre = req.params.titre
     // res.send(`Bientôt le film <b>${id}</b>  !`)
     res.render('moviesDetails', { title: titre, movieId: id })
+})
+
+app.get('/login', (req, res) => {
+    res.render('login', { title: 'Espace membre' })
+})
+const fakeUser = { email: '12345', password: 'qsd' }
+
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
+app.post('/login', urlencodedParser, (req, res) => {
+    if (!req.body) {
+        res.sendStatus(500)
+    } else {
+        if (fakeUser.email === req.body.email && fakeUser.password === req.body.password) {
+            const myToken = jwt.sign({ iss: 'http://expressMovie.fr', user: 'moderator', test: 'test' }, secret)
+            res.json(myToken)
+        }
+        else {
+            res.sendStatus(401)
+        }
+    }
+})
+
+app.get('/member-only', (req, res) => {
+    console.log('req.user', req.user);
+    res.send(req.user)
 })
 app.listen(PORT, () => {
     console.log(`the application is listening on port ${PORT}`);
